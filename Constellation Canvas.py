@@ -50,10 +50,8 @@ class Point(object):
 class Constellation(Canvas):
     def __init__(self, master):
         # Initialize canvas, set background to white
-        Canvas.__init__(self, master, bg = "black")
-        # Make sure canvas fills entire window
-        self.pack(fill=BOTH, expand=1)
-
+        Canvas.__init__(self, master, bg = "black", highlightthickness = 0)
+        
     # Plots points
     # Takes in point and color
     def plot(self, point):
@@ -311,25 +309,98 @@ class Constellation(Canvas):
         self.drawLine(p4, p7)
         self.drawLine(p5, p6)
         
+# Program Frame       
+class Game(Frame):
+    def __init__(self, master):
+        Frame.__init__(self, master)
+        self.master = master
+        
+    # Sets up player input, text response, and canvas
+    def setupGUI(self):
 
+        # Create box for player input at the bottom of the window
+        # Bind to the enter key and put it in focus so the player
+        # Won't have to click on it
+        Game.playerInput = Entry(self.master, bg = "white")
+        Game.playerInput.bind("<Return>", self.process)
+        Game.playerInput.pack(side = BOTTOM, fill = X)
+        Game.playerInput.focus()
+
+        # Text response for player's input
+        Game.result = Label(self.master, bg = "black", fg = "yellow", text = "Enter passphrase")
+        Game.result.pack(side = BOTTOM, fill = X)
+
+        # Constellation canvas
+        Game.sky = Constellation(self.master)
+        Game.sky.pack(fill = BOTH, expand = 1)
+        
+        
+    # Processes player input
+    def process(self, event):
+
+        # Take player input and make it lowercase
+        con = Game.playerInput.get()
+        con = con.lower()
+
+        # Plots the constellations with phrase collected by completeing the other puzzles
+        # Or tells them to try again if none of the accepted phrases are entered
+        if (con == "the bird"):
+            Game.sky.plotPhoenix()
+            Game.result.config(text = "user/password")
+
+        elif (con == "the bull"):
+            Game.sky.plotTaurus()
+            Game.result.config(text = "user/password")
+
+        elif (con == "big dog"):
+            Game.sky.plotCanisMajor()
+            Game.result.config(text = "user/password")
+
+        elif (con == "hunting dogs"):
+            Game.sky.plotCanesVenatici()
+            Game.result.config(text = "user/password")
+
+        elif (con == "camo lizard"):
+            Game.sky.plotChameleon()
+            Game.result.config(text = "user/password")
+
+        elif (con == "the dragon"):
+            Game.sky.plotDraco()
+            Game.result.config(text = "user/password")
+
+        elif (con == "the cup"):
+            Game.sky.plotCrater()
+            Game.result.config(text = "user/password")
+
+        elif (con == "the fox"):
+            Game.sky.plotVulpecula()
+            Game.result.config(text = "user/password")
+
+        else:
+            Game.result.config(text = "Try again.")
+    
 
 # Main part of the program
 
 # the default size of the canvas is 600x520
 WIDTH = 600
 HEIGHT = 520
-# the default point radius is 0 pixels and can be red, blue or green
+
+# the default point radius is 0 pixels and yellow
 POINT_RADIUS = 2
 POINT_COLOR = "yellow"
 
+# default line color is yellow
 LINE_COLOR = "yellow"
 
 # create the window
 window = Tk()
 window.geometry("{}x{}".format(WIDTH, HEIGHT))
 window.title("Constellations")
-# create the chaos game as a Tkinter canvas inside the window
-s = Constellation(window)
-s.plotVulpecula()
+
+# create the Constellation Canvas
+s = Game(window)
+s.setupGUI()
+
 # wait for the window to close
 window.mainloop()
